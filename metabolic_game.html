@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Metabolic Pathways Study Game</title>
+      <style>
+          * {
+              margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+}
+
+        body {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+}
+
+        .container {
+                      max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+}
+
+        .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+}
+
+        .header h1 {
+                      font-size: 32px;
+            margin-bottom: 10px;
+}
+
+        .header p {
+                      font-size: 16px;
+            opacity: 0.9;
+}
+
+        .mode-selector {
+                      display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+}
+
+        .mode-btn {
+                      padding: 30px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+}
+
+        .mode-btn:hover {
+                      transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .icon {
+                      font-size: 40px;
+            margin-bottom: 10px;
+}
+
+        .game-area {
+                      display: none;
+            padding: 30px;
+}
+
+        .game-area.active {
+            display: block;
+        }
+
+        /* STUDY MODE */
+        .study-container {
+                      min-height: 500px;
+}
+
+        .pathway-display {
+                      background: #f9f9f9;
+                      border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 150px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            overflow-x: auto;
+}
+
+        .blank-space {
+                      background: #FFE5E5;
+                      border: 3px dashed #FF6B6B;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 120px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF6B6B;
+                        font-weight: bold;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+}
+
+        .blank-space:hover {
+                      background: #FFD4D4;
+                                  transform: scale(1.05);
+        }
+
+        .blank-space.filled {
+            background: #E5F5E5;
+                        border-color: #4CAF50;
+            color: #4CAF50;
+            cursor: default;
+        }
+
+        .blank-space.filled-wrong {
+                      background: #FFD4D4;
+                      border-color: #FF6B6B;
+                      color: #FF6B6B;
+                    animation: shake 0.5s;
+}
+
+        @keyframes shake {
+                      0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+}
+
+        .card-container {
+                      background: #f0f0f0;
+                      border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            min-height: 120px;
+}
+
+        .card-container h3 {
+                      margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+}
+
+        .cards-grid {
+                      display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+}
+
+        .card {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+}
+
+        .card:hover {
+                      transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+        .card.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* GAME MODE */
+        .game-container {
+                      min-height: 500px;
+}
+
+        .reaction-display {
+                      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                      border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+}
+
+        .reaction-box {
+                      background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+}
+
+        .reaction-label {
+                      font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: normal;
+}
+
+        .blank-answer {
+                      background: #FFE5E5;
+                      border: 3px dashed #FF6B6B;
+            color: #FF6B6B;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 150px;
+            text-align: center;
+            font-size: 16px;
+}
+
+        .cofactor-tag {
+                      background: #FFF3CD;
+                      color: #856404;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+}
+
+        .choices {
+                      display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 30px;
+}
+
+        .choice-btn {
+                      background: white;
+            border: 2px solid #ddd;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: left;
+}
+
+        .choice-btn:hover {
+                      border-color: #667eea;
+            background: #f9f9f9;
+                        transform: translateX(5px);
+}
+
+        .choice-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .choice-btn.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .choice-btn.incorrect {
+            background: #FF6B6B;
+                        color: white;
+            border-color: #FF6B6B;
+              }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            }
+
+        .stat-box {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            }
+
+        .stat-number {
+                      font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+                      font-size: 14px;
+            opacity: 0.9;
+}
+
+        .feedback {
+                      padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+}
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #E8F5E9;
+                        color: #2E7D32;
+            border: 2px solid #4CAF50;
+        }
+
+        .feedback.incorrect {
+            background: #FFEBEE;
+                        color: #C62828;
+                                    border: 2px solid #FF6B6B;
+              }
+
+        @keyframes slideIn {
+                      from {
+                opacity: 0;
+                transform: translateY(-10px);
+        }
+            to {
+                              opacity: 1;
+                transform: translateY(0);
+}
+}
+
+        .button-group {
+                      display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+}
+
+        .btn {
+                      padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+}
+
+        .btn-primary {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+}
+
+        .btn-primary:hover {
+                      transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+                      background: #ddd;
+                      color: #333;
+}
+
+        .btn-secondary:hover {
+                      background: #ccc;
+                      }
+
+        .btn:disabled {
+                      opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+}
+
+        .pathway-selector {
+                      margin-bottom: 20px;
+}
+
+        .pathway-selector label {
+                      font-weight: 600;
+            margin-right: 10px;
+            color: #333;
+}
+
+        .pathway-selector select {
+                      padding: 10px 15px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+}
+
+        .pathway-selector select:focus {
+                      outline: none;
+            border-color: #667eea;
+}
+
+        .result-message {
+                      font-size: 20px;
+            margin: 20px 0;
+            text-align: center;
+}
+
+        .metabolite-box {
+                      background: white;
+            border: 2px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px;
+            display: inline-block;
+            min-width: 150px;
+            text-align: center;
+}
+
+        .enzyme-circle {
+                      background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin: 10px;
+            flex-shrink: 0;
+}
+
+        .arrow {
+                      font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+            margin: 0 10px;
+}
+
+        @media (max-width: 768px) {
+            .mode-selector {
+                              grid-template-columns: 1fr;
+        }
+
+            .header h1 {
+                              font-size: 24px;
+        }
+
+            .choices {
+                              grid-template-columns: 1fr;
+}
+
+            .stat-box {
+                              padding: 15px;
+}
+
+            .stat-number {
+                              font-size: 24px;
+}
+}
+
+        .difficulty-selector {
+                      margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+}
+
+        .difficulty-btn {
+                      padding: 8px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+}
+
+        .difficulty-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .difficulty-btn:hover {
+                      border-color: #667eea;
+}
+    </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <h1>🧬 Metabolic Pathways Study Game</h1>
+                  <p>Learn pathways through interactive study and game modes!</p>
+              </div>
+
+              <div class="mode-selector" id="modeSelector">
+                  <div class="mode-btn" onclick="selectMode('study')">
+                      <div class="icon">📚</div>
+                      <div>Study Mode</div>
+                      <p style="font-size: 12px; margin-top: 10px; color: #666;">Drag metabolites to fill pathways</p>
+            </div>
+            <div class="mode-btn" onclick="selectMode('game')">
+                <div class="icon">🎮</div>
+                <div>Game Mode</div>
+                      <p style="font-size: 12px; margin-top: 10px; color: #666;">Answer random reactions</p>
+            </div>
+        </div>
+
+        <!-- STUDY MODE -->
+        <div class="game-area" id="studyMode">
+            <div class="study-container">
+                <div class="pathway-selector">
+                    <label for="pathwaySelect">Select Pathway:</label>
+                          <select id="pathwaySelect" onchange="loadStudyPathway()">
+                              <option value="">-- Choose a Pathway --</option>
+                              <option value="glycolysis">Glycolysis</option>
+                              <option value="tca">TCA Cycle</option>
+                              <option value="gluconeogenesis">Gluconeogenesis</option>
+                              <option value="glycogen">Glycogen Metabolism</option>
+                              <option value="pentose">Pentose Phosphate</option>
+                              <option value="heme">Heme Synthesis</option>
+                          </select>
+                      </div>
+
+                      <div class="stats" id="studyStats">
+                          <div class="stat-box">
+                              <div class="stat-number" id="correctCount">0</div>
+                              <div class="stat-label">Correct</div>
+                          </div>
+                          <div class="stat-box">
+                              <div class="stat-number" id="totalCount">0</div>
+                              <div class="stat-label">Total Blanks</div>
+                          </div>
+                      </div>
+
+                      <div class="pathway-display" id="pathwayDisplay">
+                          <p style="color: #999;">Select a pathway to begin</p>
+                </div>
+
+                <div class="card-container">
+                    <h3>Drag these cards to fill the blanks:</h3>
+                          <div class="cards-grid" id="cardsGrid"></div>
+                      </div>
+
+                      <div class="feedback" id="studyFeedback"></div>
+
+                      <div class="button-group">
+                          <button class="btn btn-primary" onclick="submitStudy()">Submit</button>
+                          <button class="btn btn-secondary" onclick="loadStudyPathway()">Restart</button>
+                          <button class="btn btn-secondary" onclick="selectMode('study')">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME MODE -->
+        <div class="game-area" id="gameMode">
+            <div class="game-container">
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</button>
+                          <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium</button>
+                          <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard</button>
+                      </div>
+
+                      <div class="stats">
+                          <div class="stat-box">
+                              <div class="stat-number" id="score">0</div>
+                              <div class="stat-label">Score</div>
+                          </div>
+                          <div class="stat-box">
+                              <div class="stat-number" id="streak">0</div>
+                              <div class="stat-label">Streak</div>
+                          </div>
+                          <div class="stat-box">
+                              <div class="stat-number" id="accuracy">0%</div>
+                              <div class="stat-label">Accuracy</div>
+                          </div>
+                          <div class="stat-box">
+                              <div class="stat-number" id="total">0</div>
+                              <div class="stat-label">Answered</div>
+                          </div>
+                      </div>
+
+                      <div class="reaction-display" id="reactionDisplay">
+                          <div style="margin-bottom: 20px;">
+                              <h3 id="reactionName">Loading...</h3>
+                              <p style="color: #666; font-size: 14px;" id="reactionPathway"></p>
+                          </div>
+                          <div id="reactionEquation"></div>
+                      </div>
+
+                      <div class="feedback" id="gameFeedback"></div>
+
+                      <div class="choices" id="choicesContainer"></div>
+
+                      <div class="button-group">
+                          <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+                          <button class="btn btn-secondary" onclick="resetGame()">Restart</button>
+                          <button class="btn btn-secondary" onclick="selectMode('game')">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+              // ===== GLOBAL DATA =====
+              const PATHWAYS = {
+                  glycolysis: {
+                      name: 'Glycolysis',
+                                        pathway: [
+                        { type: 'metabolite', value: 'Glucose' },
+{ type: 'enzyme', value: 'Hexokinase' },
+{ type: 'metabolite', value: 'Glucose-6-P' },
+{ type: 'enzyme', value: 'PFK-1' },
+{ type: 'metabolite', value: 'Fructose-1,6-BP' },
+{ type: 'enzyme', value: 'Aldolase' },
+{ type: 'metabolite', value: 'G3P (×2)' },
+{ type: 'enzyme', value: 'G3P Dehydrogenase' },
+{ type: 'metabolite', value: '1,3-BPG' },
+{ type: 'enzyme', value: 'Phosphoglycerate Kinase' },
+{ type: 'metabolite', value: 'PEP' },
+{ type: 'enzyme', value: 'Pyruvate Kinase' },
+{ type: 'metabolite', value: 'Pyruvate' }
+                ]
+    },
+            tca: {
+                name: 'TCA Cycle',
+                                  pathway: [
+                  { type: 'metabolite', value: 'Acetyl-CoA' },
+{ type: 'enzyme', value: 'Citrate Synthase' },
+{ type: 'metabolite', value: 'Citrate' },
+{ type: 'enzyme', value: 'Aconitase' },
+{ type: 'metabolite', value: 'Isocitrate' },
+{ type: 'enzyme', value: 'Isocitrate DH' },
+{ type: 'metabolite', value: 'α-Ketoglutarate' },
+{ type: 'enzyme', value: 'α-KGD Complex' },
+{ type: 'metabolite', value: 'Succinyl-CoA' },
+{ type: 'enzyme', value: 'Succinate Thiokinase' },
+{ type: 'metabolite', value: 'Succinate' },
+{ type: 'enzyme', value: 'Succinate DH' },
+{ type: 'metabolite', value: 'Fumarate' },
+{ type: 'enzyme', value: 'Fumarase' },
+{ type: 'metabolite', value: 'Malate' },
+{ type: 'enzyme', value: 'Malate DH' },
+{ type: 'metabolite', value: 'Oxaloacetate' }
+                ]
+            },
+            gluconeogenesis: {
+                name: 'Gluconeogenesis',
+                                  pathway: [
+                  { type: 'metabolite', value: 'Pyruvate' },
+{ type: 'enzyme', value: 'Pyruvate Carboxylase' },
+{ type: 'metabolite', value: 'Oxaloacetate' },
+{ type: 'enzyme', value: 'PEPCK' },
+{ type: 'metabolite', value: 'PEP' },
+{ type: 'enzyme', value: 'Enolase' },
+{ type: 'metabolite', value: '2-Phosphoglycerate' },
+{ type: 'enzyme', value: 'Phosphoglycerate Mutase' },
+{ type: 'metabolite', value: '3-Phosphoglycerate' },
+{ type: 'enzyme', value: 'Phosphoglycerate Kinase' },
+{ type: 'metabolite', value: '1,3-BPG' },
+{ type: 'enzyme', value: 'G3P Dehydrogenase' },
+{ type: 'metabolite', value: 'G3P' },
+{ type: 'enzyme', value: 'Aldolase' },
+{ type: 'metabolite', value: 'Fructose-1,6-BP' },
+{ type: 'enzyme', value: 'FBPase-1' },
+{ type: 'metabolite', value: 'Fructose-6-P' },
+{ type: 'enzyme', value: 'G6Pase' },
+{ type: 'metabolite', value: 'Glucose' }
+                ]
+            },
+            glycogen: {
+                name: 'Glycogen Metabolism',
+                                  pathway: [
+                  { type: 'metabolite', value: 'Glucose' },
+{ type: 'enzyme', value: 'Hexokinase' },
+{ type: 'metabolite', value: 'Glucose-6-P' },
+{ type: 'enzyme', value: 'Phosphoglucomutase' },
+{ type: 'metabolite', value: 'Glucose-1-P' },
+{ type: 'enzyme', value: 'UDP-Glucose PPase' },
+{ type: 'metabolite', value: 'UDP-Glucose' },
+{ type: 'enzyme', value: 'Glycogen Synthase' },
+{ type: 'metabolite', value: 'Glycogen' },
+{ type: 'enzyme', value: 'Glycogen Phosphorylase' },
+{ type: 'metabolite', value: 'Glucose-1-P' },
+{ type: 'enzyme', value: 'Phosphoglucomutase' },
+{ type: 'metabolite', value: 'Glucose-6-P' }
+                ]
+            },
+            pentose: {
+                name: 'Pentose Phosphate Pathway',
+                                  pathway: [
+                  { type: 'metabolite', value: 'Glucose-6-P' },
+{ type: 'enzyme', value: 'G6PD' },
+{ type: 'metabolite', value: '6-Phosphogluconolactone' },
+{ type: 'enzyme', value: '6-Phosphogluconolactone Hydrolase' },
+{ type: 'metabolite', value: '6-Phosphogluconate' },
+{ type: 'enzyme', value: '6-Phosphogluconate DH' },
+{ type: 'metabolite', value: 'Ribulose-5-P' },
+{ type: 'enzyme', value: 'Ribulose-5-P Isomerase' },
+{ type: 'metabolite', value: 'Ribose-5-P' }
+                ]
+            },
+            heme: {
+                name: 'Heme Biosynthesis',
+                                  pathway: [
+                  { type: 'metabolite', value: 'Glycine + Succinyl-CoA' },
+{ type: 'enzyme', value: 'ALA Synthase' },
+{ type: 'metabolite', value: 'δ-Aminolevulinic Acid' },
+{ type: 'enzyme', value: 'ALA Dehydratase' },
+{ type: 'metabolite', value: 'Porphobilinogen' },
+{ type: 'enzyme', value: 'PBG Deaminase' },
+{ type: 'metabolite', value: 'Uroporphyrinogen III' },
+{ type: 'enzyme', value: 'Uro Decarboxylase' },
+{ type: 'metabolite', value: 'Coproporphyrinogen III' },
+{ type: 'enzyme', value: 'Copro Oxidase' },
+{ type: 'metabolite', value: 'Protoporphyrinogen IX' },
+{ type: 'enzyme', value: 'Protoporphyrinogen Oxidase' },
+{ type: 'metabolite', value: 'Protoporphyrin IX' },
+{ type: 'enzyme', value: 'Ferrochelatase' },
+{ type: 'metabolite', value: 'HEME' }
+                ]
+            }
+};
+
+        const REACTIONS = [
+            // Glycolysis
+{ pathway: 'Glycolysis', name: 'Glucose Phosphorylation', precursor: 'Glucose', enzyme: 'Hexokinase', product: 'Glucose-6-P', cofactor: 'ATP' },
+{ pathway: 'Glycolysis', name: 'Rate-Limiting Step', precursor: 'Fructose-6-P', enzyme: 'PFK-1', product: 'Fructose-1,6-BP', cofactor: 'ATP' },
+{ pathway: 'Glycolysis', name: 'Aldolase Cleavage', precursor: 'Fructose-1,6-BP', enzyme: 'Aldolase', product: 'G3P + DHAP', cofactor: 'None' },
+{ pathway: 'Glycolysis', name: 'G3P Oxidation', precursor: 'G3P', enzyme: 'G3P Dehydrogenase', product: '1,3-BPG', cofactor: 'NAD+' },
+{ pathway: 'Glycolysis', name: 'Pyruvate Formation', precursor: 'PEP', enzyme: 'Pyruvate Kinase', product: 'Pyruvate', cofactor: 'ADP→ATP' },
+
+            // TCA
+{ pathway: 'TCA Cycle', name: 'Citrate Formation', precursor: 'Acetyl-CoA + OAA', enzyme: 'Citrate Synthase', product: 'Citrate', cofactor: 'CoA' },
+{ pathway: 'TCA Cycle', name: 'Isocitrate Formation', precursor: 'Citrate', enzyme: 'Aconitase', product: 'Isocitrate', cofactor: 'None' },
+{ pathway: 'TCA Cycle', name: 'Rate-Limiting Step', precursor: 'Isocitrate', enzyme: 'Isocitrate DH', product: 'α-Ketoglutarate', cofactor: 'NAD+' },
+{ pathway: 'TCA Cycle', name: 'Succinyl-CoA Formation', precursor: 'α-Ketoglutarate', enzyme: 'α-KGD Complex', product: 'Succinyl-CoA', cofactor: 'NAD+' },
+{ pathway: 'TCA Cycle', name: 'GTP Production', precursor: 'Succinyl-CoA', enzyme: 'Succinate Thiokinase', product: 'Succinate', cofactor: 'GDP+Pi→GTP' },
+{ pathway: 'TCA Cycle', name: 'FAD Reduction', precursor: 'Succinate', enzyme: 'Succinate DH', product: 'Fumarate', cofactor: 'FAD' },
+{ pathway: 'TCA Cycle', name: 'Malate Formation', precursor: 'Fumarate', enzyme: 'Fumarase', product: 'Malate', cofactor: 'None' },
+{ pathway: 'TCA Cycle', name: 'OAA Regeneration', precursor: 'Malate', enzyme: 'Malate DH', product: 'Oxaloacetate', cofactor: 'NAD+' },
+
+            // Gluconeogenesis
+{ pathway: 'Gluconeogenesis', name: 'Pyruvate Carboxylation', precursor: 'Pyruvate', enzyme: 'Pyruvate Carboxylase', product: 'Oxaloacetate', cofactor: 'ATP + Biotin' },
+{ pathway: 'Gluconeogenesis', name: 'PEPCK Reaction', precursor: 'Oxaloacetate', enzyme: 'PEPCK', product: 'PEP', cofactor: 'GTP' },
+{ pathway: 'Gluconeogenesis', name: 'FBPase-1 Step', precursor: 'Fructose-1,6-BP', enzyme: 'FBPase-1', product: 'Fructose-6-P', cofactor: 'None' },
+{ pathway: 'Gluconeogenesis', name: 'Final Step', precursor: 'Glucose-6-P', enzyme: 'G6Pase', product: 'Glucose', cofactor: 'None' },
+
+            // Glycogen
+{ pathway: 'Glycogen', name: 'Glucose Activation', precursor: 'Glucose-1-P', enzyme: 'UDP-Glucose PPase', product: 'UDP-Glucose', cofactor: 'UTP' },
+{ pathway: 'Glycogen', name: 'Glycogen Synthesis', precursor: 'UDP-Glucose', enzyme: 'Glycogen Synthase', product: 'Glycogen', cofactor: 'Primer' },
+{ pathway: 'Glycogen', name: 'Glycogen Degradation', precursor: 'Glycogen', enzyme: 'Glycogen Phosphorylase', product: 'Glucose-1-P', cofactor: 'PLP' },
+
+            // Pentose
+{ pathway: 'Pentose Phosphate', name: 'First Oxidation', precursor: 'Glucose-6-P', enzyme: 'G6PD', product: '6-Phosphogluconolactone', cofactor: 'NADP+' },
+{ pathway: 'Pentose Phosphate', name: 'Second Oxidation', precursor: '6-Phosphogluconate', enzyme: '6-Phosphogluconate DH', product: 'Ribulose-5-P', cofactor: 'NADP+' },
+{ pathway: 'Pentose Phosphate', name: 'Isomerization', precursor: 'Ribulose-5-P', enzyme: 'Ribulose-5-P Isomerase', product: 'Ribose-5-P', cofactor: 'None' },
+
+            // Heme
+{ pathway: 'Heme', name: 'First Committed Step', precursor: 'Glycine + Succinyl-CoA', enzyme: 'ALA Synthase', product: 'δ-Aminolevulinic Acid', cofactor: 'PLP' },
+{ pathway: 'Heme', name: 'PBG Formation', precursor: 'δ-Aminolevulinic Acid', enzyme: 'ALA Dehydratase', product: 'Porphobilinogen', cofactor: 'Zn2+' },
+{ pathway: 'Heme', name: 'Uroporphyrinogen Formation', precursor: 'Porphobilinogen', enzyme: 'PBG Deaminase', product: 'Uroporphyrinogen III', cofactor: 'None' },
+{ pathway: 'Heme', name: 'Heme Formation', precursor: 'Protoporphyrin IX', enzyme: 'Ferrochelatase', product: 'Heme', cofactor: 'Fe2+' }
+        ];
+
+        let currentMode = null;
+        let currentPathway = null;
+        let pathwayState = {};
+        let gameState = {
+            score: 0,
+            streak: 0,
+            total: 0,
+            correct: 0,
+            difficulty: 'easy',
+                      currentQuestion: null
+          };
+
+        // ===== MODE SELECTION =====
+        function selectMode(mode) {
+                      currentMode = mode;
+            document.querySelectorAll('.game-area').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
+
+            if (mode === 'study') {
+                document.getElementById('studyMode').classList.add('active');
+                document.querySelector('[onclick="selectMode(\'study\')"]').classList.add('active');
+                  } else {
+                                  document.getElementById('gameMode').classList.add('active');
+                document.querySelector('[onclick="selectMode(\'game\')"]').classList.add('active');
+                                  nextQuestion();
+            }
+        }
+
+        // ===== STUDY MODE =====
+        function loadStudyPathway() {
+                      const select = document.getElementById('pathwaySelect');
+            const pathwayKey = select.value;
+
+            if (!pathwayKey) {
+                alert('Please select a pathway');
+                return;
+            }
+
+            currentPathway = PATHWAYS[pathwayKey];
+            pathwayState = {};
+
+            generateStudyPathway();
+        }
+
+        function generateStudyPathway() {
+                      const pathway = currentPathway.pathway;
+            const display = document.getElementById('pathwayDisplay');
+            const grid = document.getElementById('cardsGrid');
+            const blanks = [];
+            const blankIndices = [];
+
+            // Randomly select metabolites to blank (not enzymes)
+            const metaboliteIndices = pathway
+                .map((item, idx) => item.type === 'metabolite' ? idx : -1)
+                .filter(idx => idx !== -1);
+
+            const numBlanks = Math.min(3, Math.ceil(metaboliteIndices.length / 2));
+            for (let i = 0; i < numBlanks; i++) {
+                const randomIdx = Math.floor(Math.random() * metaboliteIndices.length);
+                blankIndices.push(metaboliteIndices[randomIdx]);
+                metaboliteIndices.splice(randomIdx, 1);
+            }
+
+            // Generate display
+            display.innerHTML = pathway.map((item, idx) => {
+                              if (blankIndices.includes(idx)) {
+                                  blanks.push({ value: item.value, idx });
+                                  return `<div class="blank-space" id="blank-${idx}" data-value="${item.value}">?</div>`;
+        } else if (item.type === 'metabolite') {
+                    return `<div class="metabolite-box">${item.value}</div>`;
+        } else {
+                    return `<div class="enzyme-circle">${item.value.substring(0, 3)}</div>`;
+        }
+}).join('<div class="arrow">→</div>');
+
+            // Generate cards
+            grid.innerHTML = blanks.map(blank =>
+                              `<div class="card" draggable="true" data-value="${blank.value}"
+                                  ondragstart="dragStart(event)" ondragend="dragEnd(event)">${blank.value}</div>`
+                          ).join('');
+
+            pathwayState = { blanks, blankIndices };
+            updateStudyStats();
+}
+
+        function dragStart(event) {
+                      event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', event.target.dataset.value);
+            event.target.style.opacity = '0.6';
+        }
+
+        function dragEnd(event) {
+                      event.target.style.opacity = '1';
+        }
+
+        function allowDrop(event) {
+                      event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+
+        // Add drag handlers to blank spaces
+        document.addEventListener('dragover', allowDrop);
+
+        document.addEventListener('drop', function(e) {
+                      if (e.target.classList.contains('blank-space')) {
+                const value = e.dataTransfer.getData('text/plain');
+                const expected = e.target.dataset.value;
+
+                if (value === expected) {
+                    e.target.textContent = value;
+                    e.target.classList.add('filled');
+                    document.querySelector(`.card[data-value="${value}"]`).classList.add('used');
+                    updateStudyStats();
+                } else {
+                    e.target.classList.add('filled-wrong');
+                    setTimeout(() => e.target.classList.remove('filled-wrong'), 500);
+                }
+                      }
+        });
+
+        function updateStudyStats() {
+                      const correct = document.querySelectorAll('.blank-space.filled').length;
+            const total = pathwayState.blankIndices ? pathwayState.blankIndices.length : 0;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('totalCount').textContent = total;
+        }
+
+        function submitStudy() {
+                      const unfilled = document.querySelectorAll('.blank-space:not(.filled)').length;
+            if (unfilled > 0) {
+                alert(`Fill all ${unfilled} blank(s) before submitting!`);
+                return;
+            }
+
+            const feedback = document.getElementById('studyFeedback');
+            feedback.textContent = '✅ Perfect! All metabolites correctly placed!';
+            feedback.classList.add('show', 'correct');
+
+            setTimeout(() => {
+                              loadStudyPathway();
+                feedback.classList.remove('show');
+        }, 2000);
+}
+
+        // ===== GAME MODE =====
+        function setDifficulty(level) {
+                      gameState.difficulty = level;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            resetGame();
+        }
+
+        function nextQuestion() {
+                      gameState.currentQuestion = REACTIONS[Math.floor(Math.random() * REACTIONS.length)];
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+                      const q = gameState.currentQuestion;
+            const blankTypes = ['enzyme', 'precursor', 'product', 'cofactor'];
+            const blankType = blankTypes[Math.floor(Math.random() * blankTypes.length)];
+
+            const reactionName = document.getElementById('reactionName');
+            const reactionPathway = document.getElementById('reactionPathway');
+            const equation = document.getElementById('reactionEquation');
+            const choicesContainer = document.getElementById('choicesContainer');
+
+            reactionName.textContent = q.name;
+            reactionPathway.textContent = `Pathway: ${q.pathway}`;
+
+            // Build reaction equation
+            let eqHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px;">
+                    <div class="reaction-box">
+                        <div class="reaction-label">Substrate</div>
+                        ${blankType === 'precursor' ? `<div class="blank-answer">?</div>` : `<div>${q.precursor}</div>`}
+                    </div>
+                    <div class="arrow">+</div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="reaction-label">Enzyme</div>
+                        ${blankType === 'enzyme' ? `<div class="enzyme-circle" style="width: 60px; height: 60px; font-size: 14px;">?</div>` : `<div class="enzyme-circle" style="width: 60px; height: 60px; font-size: 10px;">${q.enzyme}</div>`}
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="reaction-box">
+                        <div class="reaction-label">Product</div>
+                        ${blankType === 'product' ? `<div class="blank-answer">?</div>` : `<div>${q.product}</div>`}
+                    </div>
+                    <div class="arrow">+</div>
+                    <div class="reaction-box">
+                        <div class="reaction-label">Cofactor</div>
+                        ${blankType === 'cofactor' ? `<div class="blank-answer">?</div>` : `<span class="cofactor-tag">${q.cofactor}</span>`}
+                    </div>
+                </div>
+            `;
+            equation.innerHTML = eqHTML;
+
+            // Generate choices
+            const choices = generateChoices(blankType, q);
+            choicesContainer.innerHTML = choices.map((choice, idx) => `
+                <button class="choice-btn" onclick="selectChoice(this, '${choice.value}', ${choice.correct})">
+                    ${choice.label}
+                </button>
+            `).join('');
+
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('gameFeedback').classList.remove('show');
+}
+
+        function generateChoices(blankType, reaction) {
+            const correct = {
+                enzyme: { value: reaction.enzyme, label: reaction.enzyme },
+                precursor: { value: reaction.precursor, label: reaction.precursor },
+                product: { value: reaction.product, label: reaction.product },
+                cofactor: { value: reaction.cofactor, label: reaction.cofactor }
+}[blankType];
+
+            // Get all unique values from reactions for each category
+            let allOptions = [];
+            if (blankType === 'enzyme') {
+                allOptions = [...new Set(REACTIONS.map(r => r.enzyme))];
+            } else if (blankType === 'precursor') {
+                allOptions = [...new Set(REACTIONS.map(r => r.precursor).flatMap(p => p.split(' + ')))];
+            } else if (blankType === 'product') {
+                allOptions = [...new Set(REACTIONS.map(r => r.product).flatMap(p => p.split(' + ')))];
+            } else {
+                allOptions = [...new Set(REACTIONS.map(r => r.cofactor).flatMap(c => c.split('→')))];
+            }
+
+            // Remove correct answer and shuffle
+            const others = allOptions
+                .filter(opt => opt !== correct.value && opt.trim() !== '')
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4);
+
+            const choices = [correct, ...others.map(v => ({ value: v, label: v }))];
+
+            // Shuffle all choices
+            return choices.sort(() => Math.random() - 0.5).map((c, idx) => ({
+                              ...c,
+                              correct: c.value === correct.value
+              }));
+            }
+
+        function selectChoice(btn, value, correct) {
+            const feedback = document.getElementById('gameFeedback');
+
+            if (correct) {
+                // Correct answer
+                document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+                btn.classList.add('correct');
+
+                gameState.score += (gameState.difficulty === 'easy' ? 10 : gameState.difficulty === 'medium' ? 20 : 30);
+                gameState.streak++;
+                gameState.correct++;
+                feedback.textContent = '✅ Correct! Next question...';
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                gameState.total++;
+                feedback.classList.add('show');
+                updateGameStats();
+
+                // Auto move to next after 1.5 seconds
+                setTimeout(() => {
+                    nextQuestion();
+}, 1500);
+} else {
+                // Wrong answer - show incorrect but let them try again
+                btn.classList.add('incorrect');
+                btn.disabled = true;
+
+                feedback.textContent = '❌ Try again!';
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+                feedback.classList.add('show');
+}
+}
+
+        function updateGameStats() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('streak').textContent = gameState.streak;
+            document.getElementById('total').textContent = gameState.total;
+            const accuracy = gameState.total > 0 ? Math.round((gameState.correct / gameState.total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+}
+
+        function resetGame() {
+            gameState = { score: 0, streak: 0, total: 0, correct: 0, difficulty: gameState.difficulty, currentQuestion: null };
+            updateGameStats();
+            nextQuestion();
+}
+    </script>
+</body>
+</html>
